@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="css/foot.css"/>
     <link rel="stylesheet" href="css/head.css"/>
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
-    <meta name="keywords" content="网上商城, 电商平台, 能源互联网">
-    <meta name="description" content="能源互联网, 网上商城, 电商平台, 电子商务, 掌上e宝, 科技金服, 不正经网站研究中心">
+    <meta name="keywords" content="网上商城, 电商平台">
+    <meta name="description" content="方便快捷的电子商务购物平台">
     <title>所有商品</title>
     <noscript>抱歉，你的浏览器不支持 JavaScript!</noscript>
     <script type="text/javascript" src="js/base-v1.js" charset="utf-8"></script>
@@ -24,6 +24,7 @@
     <script type="text/javascript" src="js/jquery-extend.js"></script>
     <script type="text/javascript" src="js/logout.js"></script>
     <script type="text/javascript" src="js/lib-v1.js" charset="utf-8"></script>
+    <link rel="icon" type="image/x-icon" href="img/head/favicon.ico"/>
     <link href="css/prodList.css" rel="stylesheet" type="text/css">
     <meta charset="UTF-8">
     <title>商品分页</title>
@@ -38,7 +39,7 @@
                 return;
             }
             queryPages(queryPageParam);
-        }
+        };
 
         /**
          * 自动登录
@@ -47,7 +48,7 @@
          */
         function autoLogin(userName, userPassword) {
             $.ajax({
-                url:"http://www.supermarket.com/user/autologin",
+                url:"http://40f730q296.qicp.vip/user/autologin",
                 type:"get",
                 data:{
                     "userName": userName,
@@ -60,7 +61,7 @@
                         let html = _data.userName +
                             "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
                         if (_data.userType >= 3)
-                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
+                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://40f730q296.qicp.vip/manage.html' class='link-logout'>[后台]</a>";
                         userId = _data.userId;
                         $("#loginbar").html(html);
                     }else if (data.status === 500){
@@ -83,12 +84,12 @@
                 return;
             }
             $.ajax({
-                url: "http://www.supermarket.com/cart/save?productId=" + productId + "&userId=" + userId + "&num=1",
+                url: "http://40f730q296.qicp.vip/cart/save?productId=" + productId + "&userId=" + userId + "&num=1",
                 dataType: "json",
                 type: "GET",
                 success: function (data) {
                     if (data.status === 200) {
-                        window.location.href = "http://www.supermarket.com/mycart.html";
+                        window.location.href = "http://40f730q296.qicp.vip/mycart.html";
                     } else if (data.status === 201) {
                         alert(data.msg);
                     } else {
@@ -116,7 +117,7 @@
             }
             //当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
             $.ajax({
-                url: "http://www.supermarket.com/user/query/" + _ticket,
+                url: "http://40f730q296.qicp.vip/user/query/" + _ticket,
                 dataType: "json",
                 type: "GET",
                 success: function (data) {
@@ -125,7 +126,7 @@
                         let html = _data.userName +
                             "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
                         if (_data.userType >= 3)
-                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
+                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://40f730q296.qicp.vip/manage.html' class='link-logout'>[后台]</a>";
                         userId = _data.userId;
                         $("#loginbar").html(html);
                     }else if (data.status === 201){
@@ -146,15 +147,15 @@
         function queryPages(param) {
             let ticket = $.cookie("EM_TICKET");
             let userId = "";
-            $.get("http://www.supermarket.com/user/query/" + ticket, function (data) {
+            $.get("http://40f730q296.qicp.vip/user/query/" + ticket, function (data) {
                 if (data.status === 200) {
                     let _data = JSON.parse(data.data);//jackson
                     userId = _data.userId;
                 }
-            })
+            });
             sleep(200);
             $.ajax({
-                url: "http://www.supermarket.com/products/pageManage?" + param,
+                url: "http://40f730q296.qicp.vip/products/pageManage?" + param,
                 dataType: "json",
                 type: "POST",
                 success: function (data) {
@@ -201,7 +202,7 @@
             let localUrl = decodeURI(window.location.href);
             let queryPageParam = localUrl.substr(localUrl.lastIndexOf("?") + 1);
             if (!queryPageParam.match("^page=[0-9]*&rows=[0-9]*$")) {
-                window.location.href = "product-list.html";
+                window.location.href = "./product-list.html?page=1&rows=30";
             } else {
                 let page = parseInt(queryPageParam.match(/[0-9]+/g)[0]);
                 let rows = parseInt(queryPageParam.match(/[0-9]+/g)[1]);
@@ -220,7 +221,7 @@
             let localUrl = decodeURI(window.location.href);
             let queryPageParam = localUrl.substr(localUrl.lastIndexOf("?") + 1);
             if (!queryPageParam.match("^page=[0-9]*&rows=[0-9]*$")) {
-                window.location.href = "product-list.html";
+                window.location.href = "./product-list.html?page=1&rows=30";
             } else {
                 let page = parseInt(queryPageParam.match(/[0-9]+/g)[0]);
                 let rows = parseInt(queryPageParam.match(/[0-9]+/g)[1]);
@@ -255,36 +256,34 @@
                 <li class="fore1" id="loginbar" clstag="homepage|keycount|home2013|01b">
                     <span id="head_span">
                         <a href="login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                        <a href="regist.html">注册</a>
+                        <a href="regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a id="goto_order" href="./myorder.html">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			            <a id="goto_cart" href="./mycart.html">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                 </li>
             </ul>
         </div>
     </div>
     <div class="line2">
-        <img id="logo" src="../../SuperMarket-master/supermarketstatic/img/head/logo.png" alt="logo"/>
+        <img id="logo" src="img/head/logo.png" alt="logo"/>
         <input type="text" value="" accesskey="s" id="key" autocomplete="off"
                onkeydown="if(event.keyCode===13) search('key');"/>
         <input type="button" value="搜 索" onclick="search('key')"/>
-        <span id="goto">
-			<a id="goto_order" href="./myorder.html">我的订单</a>
-			<a id="goto_cart" href="./mycart.html">我的购物车</a>
-		</span>
-        <img id="erwm" src="../../SuperMarket-master/supermarketstatic/img/head/e2.png" alt="e2" width="76"/>
+        <img id="erwm" src="img/head/stu3.png" alt="e2" width="250"/>
     </div>
     <div class="line3">
         <div class="content">
             <ul>
-                <li><a href="../../SuperMarket-master/supermarketstatic/index.html">首页</a></li>
-                <li><a href="product-list.html?page=1&rows=30">全部商品</a></li>
-                <li><a href="../../SuperMarket-master/supermarketstatic/instant-buy.html">秒杀商品</a></li>
-                <li><a href="javascript:void(0)">电脑平板</a></li>
-                <li><a href="javascript:void(0)">家用电器</a></li>
-                <li><a href="javascript:void(0)">汽车用品</a></li>
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./product-list.html?page=1&rows=30">全部商品</a></li>
+                <li><a href="./instant-buy.html">秒杀商品</a></li>
+                <li><a href="javascript:void(0)">服饰家居</a></li>
+                <li><a href="javascript:void(0)">鞋袜箱包</a></li>
+                <li><a href="javascript:void(0)">彩妆护肤</a></li>
                 <li><a href="javascript:void(0)">食品饮料</a></li>
+                <li><a href="javascript:void(0)">数码电子</a></li>
                 <li><a href="javascript:void(0)">图书杂志</a></li>
-                <li><a href="javascript:void(0)">服装服饰</a></li>
-                <li><a href="javascript:void(0)">大英理财</a></li>
+                <li><a href="javascript:void(0)">医疗保健</a></li>
             </ul>
         </div>
     </div>
@@ -300,17 +299,11 @@
     <a href="javascript:void(0)" onclick="pageNext()" class="link_button">下一页</a>
 </div>
 
-<div class="fixed">
-    <a href="https://github.com/GoogleLLP/SuperMarket" target="_blank">
-        <img src="../../SuperMarket-master/supermarketstatic/img/head/qr.jpg" width="100" alt="qrcode"/>
-    </a>
-    <a href="#common_head" class="toTop"></a>
-</div>
 <div id="common_foot">
     <p>
-        Copyright © 2011-2019 网上商城 版权所有 保留一切权利 粤CM-20201119 | 粤ICP备20201119号-1
+        2020—2021学年春季学期  18 级小组项目大型软件电子商务平台————网上商城
         <br />
-        粤公网安备  20201119号
+        大型软件项目  CST4854A
     </p>
 </div>
 </body>
