@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="css/index.css"/>
+    <link rel="stylesheet" href="css/foot.css"/>
+    <link rel="stylesheet" href="css/head.css"/>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
+    <meta name="keywords" content="网上商城, 电商平台, 能源互联网">
+    <meta name="description" content="能源互联网, 网上商城, 电商平台, 电子商务, 掌上e宝, 科技金服, 不正经网站研究中心">
+    <title>电子商务平台系统</title>
+    <noscript>抱歉，你的浏览器不支持 JavaScript!</noscript>
+    <script type="text/javascript" src="js/base-v1.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-1.2.6.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery-extend.js"></script>
+    <script type="text/javascript" src="js/logout.js"></script>
+    <script type="text/javascript" src="js/lib-v1.js" charset="utf-8"></script>
+    <link href="css/prodList.css" rel="stylesheet" type="text/css">
+    <meta charset="UTF-8">
+</head>
+<script type="text/javascript">
+    window.onload=function(){
+        if($.cookie("identify")!=null){
+            let nickname=sessionStorage.getItem("nickname");
+            let html = nickname +
+                "，欢迎！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>"+
+            " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+                "<a id=\"goto_cart\" href=\"./mycart.html\">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            $("#loginbar").html(html);
+        }
+    }
+</script>
+
+<body>
+<div id="common_head">
+    <div class="line1">
+        <div class="content">
+            <ul>
+                <li class="fore1" id="loginbar">
+                    <span id="head_span" >
+                        <a href="login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a href="regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a id="goto_order" href="./myorder.html">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			            <a id="goto_cart" href="./mycart.html">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="line2">
+        <img id="logo" src="img/head/logo.png" alt="logo"/>
+        <input type="text" value="" accesskey="s" id="key" autocomplete="off"
+               onkeydown="if(event.keyCode===13) search('key');"/>
+        <input type="button" value="搜 索" onclick="search('key')"/>
+        <img id="erwm" src="img/head/stu3.png" alt="e2" width="250"/>
+    </div>
+    <div class="line3">
+        <div class="content">
+            <ul>
+                <li><a href="index.html">首页</a></li>
+                <li><a href="product-list.html?page=1&rows=30">全部商品</a></li>
+                <li><a href="./instant-buy.html">秒杀商品</a></li>
+                <li><a href="javascript:void(0)">服饰家居</a></li>
+                <li><a href="javascript:void(0)">鞋袜箱包</a></li>
+                <li><a href="javascript:void(0)">彩妆护肤</a></li>
+                <li><a href="javascript:void(0)">食品饮料</a></li>
+                <li><a href="javascript:void(0)">数码电子</a></li>
+                <li><a href="javascript:void(0)">图书杂志</a></li>
+                <li><a href="javascript:void(0)">医疗保健</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="index">
+    <div id="line1">
+        <a href="./instant-detail.html">
+            <img src="img/index/banner.jpg" alt="banner_big"/>
+        </a>
+    </div>
+    <div id="line2">
+        <a href="">
+            <img id="line2_1" src="img/index/adv1.jpg" alt="adv1"/>
+        </a>
+        <a href="">
+            <img id="line2_2" src="img/index/adv2.jpg" alt="adv2"/>
+        </a>
+        <a href="">
+            <img id="line2_3" src="img/index/adv_l1.jpg" alt="adv_l1"/>
+        </a>
+    </div>
+    <div id="line3">
+        <a href="">
+            <img id="line3_1" src="img/index/adv3.jpg" alt="adv3"/>
+        </a>
+        <a href="">
+            <img id="line3_2" src="img/index/adv4.jpg" alt="adv4"/>
+        </a>
+        <div id="line3_right">
+            <a href="">
+                <img id="line3_3" src="img/index/adv_l2.jpg" alt="adv_l2"/>
+            </a>
+            <a href="">
+                <img id="line3_4" src="img/index/adv_l3.jpg" alt="adv_l3"/>
+            </a>
+        </div>
+    </div>
+    <div id="line4">
+        <img src="img/index/217.jpg" alt="217"/>
+    </div>
+    <div id="line5" align="center">
+        <span id="line5_1">
+            <img src="img/index/icon_g1.png" alt="icon_g1"/>&nbsp;&nbsp;亿年老企品质保证
+        </span>
+        <span id="line5_2">
+            <img src="img/index/icon_g2.png" alt="icon_g2"/>&nbsp;&nbsp;7天无条件退换货
+        </span>
+        <span id="line5_3">
+            <img src="img/index/icon_g3.png" alt="icon_g3"/>&nbsp;&nbsp;亿元起即可免运费
+        </span>
+        <span id="line5_4">
+            <img src="img/index/icon_g4.png" alt="icon_g4"/>&nbsp;&nbsp;领先业界制霸校园
+        </span>
+    </div>
+</div>
+<div id="common_foot">
+    <p>
+        2020—2021学年春季学期  18 级小组项目大型软件电子商务平台————网上商城
+        <br />
+        大型软件项目  CST4854A
+    </p>
+</div>
+</body>
+
+</html>
