@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>我的购物车</title>
-    <link href="../../SuperMarket-master/supermarketstatic/css/cart.css" rel="stylesheet" type="text/css">
+    <link href="css/cart.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/foot.css"/>
     <link rel="stylesheet" href="css/head.css"/>
     <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
@@ -15,95 +15,24 @@
     <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
     <script type="text/javascript" src="js/jquery-extend.js"></script>
     <script type="text/javascript" src="js/lib-v1.js" charset="utf-8"></script>
-    <link href="../../SuperMarket-master/supermarketstatic/css/prodList.css" rel="stylesheet" type="text/css">
-    <link rel="icon" type="image/x-icon" href="../../SuperMarket-master/supermarketstatic/img/head/favicon.ico"/>
+    <link href="css/prodList.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/x-icon" href="img/head/favicon.ico"/>
     <script type="text/javascript" src="js/logout.js"></script>
     <meta charset="UTF-8">
     <script type="text/javascript">
-        /**
-         * 文档就绪事件
-         */
-        $(function () {
-            window.userId = "";
-            let _ticket = $.cookie("EM_TICKET");
-            let userPassword = $.cookie("PASSWORD");
-            let userName = $.cookie("USERNAME");
-            if (!_ticket) {
-                if (!userPassword || !userName) {
-                    // 二者缺一无法自动登录
-                    window.location.href = "login.html";
-                    return;
-                } else{
-                    autoLogin(userName, userPassword);
-                    return;
-                }
+        window.onload=function(){
+            if($.cookie("identify")!=null){
+                let nickname=sessionStorage.getItem("nickname");
+                let html = nickname +
+                    "，欢迎！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>"+
+                    " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+                    "<a id=\"goto_cart\" href=\"./mycart.html\">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $("#loginbar").html(html);
             }
-            //当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
-            $.ajax({
-                url: "http://www.supermarket.com/user/query/" + _ticket,
-                dataType: "json",
-                type: "GET",
-                success: function (data) {
-                    if (data.status === 200) {
-                        let _data = JSON.parse(data.data);//jackson
-                        if (_data == null) {
-                            window.location.href = "./login.html";
-                            return;
-                        }
-                        let html = _data.userName +
-                            "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
-                        if (_data.userType >= 3)
-                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
-                        userId = _data.userId;
-                        $("#loginbar").html(html);
-                        query(userId);
-                    } else if (data.status === 201) {
-                        // 在redis中没找到用户
-                        delCookie("EM_TICKET");
-                        delCookie("USERNAME");
-                        delCookie("PASSWORD");
-                    } else if (data.status === 500) {
-                        alert(data.msg);
-                    }
-                },
-                error: function () {
-                    alert("请求失败");
-                }
-            });
-        });
-
-        /**
-         * 自动登录
-         * @param userName 用户名
-         * @param userPassword 密码
-         */
-        function autoLogin(userName, userPassword) {
-            $.ajax({
-                url: "http://www.supermarket.com/user/autologin",
-                type: "get",
-                data: {
-                    "userName": userName,
-                    "userPassword": userPassword
-                },
-                dataType: "json",
-                success: function (data) {
-                    if (data.status === 200) {
-                        let _data = data.data;//jackson
-                        let html = _data.userName +
-                            "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
-                        if (_data.userType >= 3)
-                            html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
-                        userId = _data.userId;
-                        $("#loginbar").html(html);
-                    } else if (data.status === 500) {
-                        alert(data.msg);
-                    }
-                },
-                error: function () {
-                    alert('请求失败');
-                }
-            });
-        }
+            else {
+                window.location.href = "login.html";
+            }
+        };
 
         /**
          * 删除购物车
@@ -117,12 +46,12 @@
             }
             if (confirm("您确定删除吗？")) {
                 $.ajax({
-                    url: "http://www.supermarket.com/cart/delete?productId=" + productId + "&userId=" + userId,
+                    url: "http://40f730q296.qicp.vip/cart/delete?productId=" + productId + "&userId=" + userId,
                     dataType: "json",
                     type: "GET",
                     success: function (data) {
                         if (data.status === 200) {
-                            window.location.href = "http://www.supermarket.com/mycart.html";
+                            window.location.href = "http://40f730q296.qicp.vip/mycart.html";
                         } else {
                             alert(data.msg);
                         }
@@ -151,7 +80,7 @@
                 return;
             }
             $.ajax({
-                url: "http://www.supermarket.com/products/item/" + productId,
+                url: "http://40f730q296.qicp.vip/products/item/" + productId,
                 dataType: "json",
                 type: "POST",
                 success: function (data) {
@@ -162,12 +91,12 @@
                         return;
                     }
                     $.ajax({
-                        url: "http://www.supermarket.com/cart/update?productId=" + productId + "&userId=" + userId + "&num=" + num,
+                        url: "http://40f730q296.qicp.vip/cart/update?productId=" + productId + "&userId=" + userId + "&num=" + num,
                         dataType: "json",
                         type: "GET",
                         success: function (data) {
                             if (data.status === 200) {
-                                window.location.href = "mycart.html";
+                                window.location.href = "./mycart.html";
                             } else {
                                 alert(data.msg);
                             }
@@ -189,7 +118,7 @@
          */
         function query(userId) {
             $.ajax({
-                url: "http://www.supermarket.com/cart/query?userId=" + userId,
+                url: "http://40f730q296.qicp.vip/cart/query?userId=" + userId,
                 dataType: "json",
                 type: "GET",
                 success: function (data) {
@@ -206,13 +135,13 @@
                             let itemMoney = productPrice * num;
                             money = money + itemMoney;
                             $("#items").append("<tr class='prods'>" +
-                                                    "<td style='width:100px;'><input name='prodC' type='checkbox' checked='checked' class='select_items' style='padding: 0;margin: 2px;' onchange='checkChanged(this)' /><a href='"+prodHtml+"+' target='_blank' style='padding:0;margin: 0;'><img src='"+productImage+"' alt='' width='80' height='90' style='padding:0;margin: 0;'/></a></td>" +
-                                                    "<td ><input type='hidden' name='productId' value='"+productId+"'/><a href='"+prodHtml+"' target='_blank' id='prods_name'>"+productName+"</a></td>" +
-                                                    "<td id='prods_price' >"+productPrice+"</td>" +
-                                                    "<td ><input type='hidden' id='" + inputId + "' value='" + num + "'/><input class='buyNumInp1' id='" + productId + "' type='number' value='" + num + "' onblur='inputNum(\"" + productId + "\",\"" + userId + "\")'/></td>" +
-                                                    "<td >"+itemMoney+"</td>" +
-                                                    "<td ><a href='javascript:void(0)' onclick='del(\""+productId + "\",\""+userId+"\")'>删除</a></td>" +
-                                                "</tr>");
+                                "<td style='width:100px;'><input name='prodC' type='checkbox' checked='checked' class='select_items' style='padding: 0;margin: 2px;' onchange='checkChanged(this)' /><a href='"+prodHtml+"+' target='_blank' style='padding:0;margin: 0;'><img src='"+productImage+"' alt='' width='80' height='90' style='padding:0;margin: 0;'/></a></td>" +
+                                "<td ><input type='hidden' name='productId' value='"+productId+"'/><a href='"+prodHtml+"' target='_blank' id='prods_name'>"+productName+"</a></td>" +
+                                "<td id='prods_price' >"+productPrice+"</td>" +
+                                "<td ><input type='hidden' id='" + inputId + "' value='" + num + "'/><input class='buyNumInp1' id='" + productId + "' type='number' value='" + num + "' onblur='inputNum(\"" + productId + "\",\"" + userId + "\")'/></td>" +
+                                "<td >"+itemMoney+"</td>" +
+                                "<td ><a href='javascript:void(0)' onclick='del(\""+productId + "\",\""+userId+"\")'>删除</a></td>" +
+                                "</tr>");
                         })
                         document.getElementById("span_2").innerText = money + "￥";
                     } else {
@@ -261,7 +190,7 @@
                 data: _date,
                 success: function (data) {
                     if (data.status === 200) {
-                        window.location.href = "myorder.html";
+                        window.location.href = "./myorder.html";
                     } else if (data.status === 201) {
                         alert(data.msg);
                     } else if (data.status === 500) {
@@ -351,36 +280,34 @@
                 <li class="fore1" id="loginbar" clstag="homepage|keycount|home2013|01b">
                     <span id="head_span">
                         <a href="login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                        <a href="regist.html">注册</a>
+                        <a href="regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a id="goto_order" href="./myorder.html">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			            <a id="goto_cart" href="./mycart.html">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                 </li>
             </ul>
         </div>
     </div>
     <div class="line2">
-        <img id="logo" src="../../SuperMarket-master/supermarketstatic/img/head/logo.png" alt="logo"/>
+        <img id="logo" src="img/head/logo.png" alt="logo"/>
         <input type="text" value="" accesskey="s" id="key" autocomplete="off"
                onkeydown="if(event.keyCode===13) search('key');"/>
         <input type="button" value="搜 索" onclick="search('key')"/>
-        <span id="goto">
-			<a id="goto_order" href="myorder.html">我的订单</a>
-			<a id="goto_cart" href="mycart.html">我的购物车</a>
-		</span>
-        <img id="erwm" src="../../SuperMarket-master/supermarketstatic/img/head/e2.png" alt="e2" width="76"/>
+        <img id="erwm" src="img/head/stu3.png" alt="e2" width="250"/>
     </div>
     <div class="line3">
         <div class="content">
             <ul>
-                <li><a href="../../SuperMarket-master/supermarketstatic/index.html">首页</a></li>
-                <li><a href="../../SuperMarket-master/supermarketstatic/product-list.html?page=1&rows=30">全部商品</a></li>
-                <li><a href="../../SuperMarket-master/supermarketstatic/instant-buy.html">秒杀商品</a></li>
-                <li><a href="javascript:void(0)">电脑平板</a></li>
-                <li><a href="javascript:void(0)">家用电器</a></li>
-                <li><a href="javascript:void(0)">汽车用品</a></li>
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./product-list.html?page=1&rows=30">全部商品</a></li>
+                <li><a href="./instant-buy.html">秒杀商品</a></li>
+                <li><a href="javascript:void(0)">服饰家居</a></li>
+                <li><a href="javascript:void(0)">鞋袜箱包</a></li>
+                <li><a href="javascript:void(0)">彩妆护肤</a></li>
                 <li><a href="javascript:void(0)">食品饮料</a></li>
+                <li><a href="javascript:void(0)">数码电子</a></li>
                 <li><a href="javascript:void(0)">图书杂志</a></li>
-                <li><a href="javascript:void(0)">服装服饰</a></li>
-                <li><a href="javascript:void(0)">大英理财</a></li>
+                <li><a href="javascript:void(0)">医疗保健</a></li>
             </ul>
         </div>
     </div>
@@ -415,22 +342,16 @@
             <span id="span_1">总价：</span>
         </div>
         <div id="total_2">
-            <a id="goto_order" href="javascript:void(0)" onclick="submitOrder(this);">提交订单</a>
+            <a id="submit_order" href="javascript:void(0)" onclick="submitOrder(this);">提交订单</a>
         </div>
     </div>
 </div>
 
-<div class="fixed">
-    <a href="https://github.com/GoogleLLP/SuperMarket" target="_blank">
-        <img src="../../SuperMarket-master/supermarketstatic/img/head/qr.jpg" width="100" alt="qrcode"/>
-    </a>
-    <a href="#common_head" class="toTop"></a>
-</div>
 <div id="common_foot">
     <p>
-        Copyright © 2011-2019 网上商城 版权所有 保留一切权利 粤CM-20201119 | 粤ICP备20201119号-1
-        <br/>
-        粤公网安备 20201119号
+        2020—2021学年春季学期  18 级小组项目大型软件电子商务平台————网上商城
+        <br />
+        大型软件项目  CST4854A
     </p>
 </div>
 </body>

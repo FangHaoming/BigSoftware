@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <title>我的订单</title>
-    <link rel="icon" type="image/x-icon" href="../../SuperMarket-master/supermarketstatic/img/head/favicon.ico" />
-    <link href="../../SuperMarket-master/supermarketstatic/css/orderList.css" rel="stylesheet" type="text/css">
-    <link href="../../SuperMarket-master/supermarketstatic/css/cart.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/x-icon" href="img/head/favicon.ico" />
+    <link href="css/orderList.css" rel="stylesheet" type="text/css">
+    <link href="css/cart.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/foot.css"/>
     <link rel="stylesheet" href="css/head.css"/>
     <noscript>抱歉，你的浏览器不支持 JavaScript!</noscript>
@@ -21,106 +21,37 @@
 </head>
 <body>
 <script type="text/javascript">
-    $(function(){
-        let userId = "";
-        let _ticket = $.cookie("EM_TICKET");
-        let userPassword = $.cookie("PASSWORD");
-        let userName = $.cookie("USERNAME");
-        if(!_ticket){
-            if (!userPassword || !userName) {
-                // 二者缺一无法自动登录
-                window.location.href="login.html";
-                return;
-            }else{
-                autoLogin(userName, userPassword);
-                return;
-            }
+    window.onload=function(){
+        if($.cookie("identify")!=null){
+            let nickname=sessionStorage.getItem("nickname");
+            let html = nickname +
+                "，欢迎！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>"+
+                " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
+                "<a id=\"goto_cart\" href=\"./mycart.html\">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            $("#loginbar").html(html);
+        }else {
+            window.location.href = "login.html";
         }
-        //当dataType类型为jsonp时，jQuery就会自动在请求链接上增加一个callback的参数
-        $.ajax({
-            url : "http://www.supermarket.com/user/query/" + _ticket,
-            dataType : "json",
-            type : "GET",
-            success : function(data){
-                if(data.status === 200) {
-                    let _data = JSON.parse(data.data);//jackson
-                    if (_data == null) {
-                        window.location.href = "./login.html";
-                        return;
-                    }
-                    let html = _data.userName +
-                        "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
-                    if (_data.userType >= 3)
-                        html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
-                    userId = _data.userId;
-                    $("#loginbar").html(html);
-                    queryOrder(userId);
-                }else if (data.status === 201){
-                    // 在redis中没找到用户
-                    delCookie("EM_TICKET");
-                    delCookie("USERNAME");
-                    delCookie("PASSWORD");
-                }else if (data.status === 500){
-                    alert(data.msg);
-                }
-            },
-            error : function(){
-                alert("请求失败");
-            }
-        });
-    });
-
-    /**
-     * 自动登录
-     * @param userName 用户名
-     * @param userPassword 密码
-     */
-    function autoLogin(userName, userPassword) {
-        $.ajax({
-            url: "http://www.supermarket.com/user/autologin",
-            type: "get",
-            data: {
-                "userName": userName,
-                "userPassword": userPassword
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.status === 200) {
-                    let _data = data.data;//jackson
-                    let html = _data.userName +
-                        "，欢迎来到Supermarket！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>";
-                    if (_data.userType >= 3)
-                        html = html + "&nbsp;&nbsp;|&nbsp;&nbsp;<a href='http://www.Supermarket.com/manage.html' class='link-logout'>[后台]</a>";
-                    userId = _data.userId;
-                    $("#loginbar").html(html);
-                } else if (data.status === 500) {
-                    alert(data.msg);
-                }
-            },
-            error: function () {
-                alert('请求失败');
-            }
-        });
-    }
+    };
 
     /**
      * 删除购物车
-     * @param productId 商品id
-     * @param userId 用户id
+     * @param product_id 商品id
+     * @param cust_id 用户id
      */
-    function del(productId,userId){
-        if(productId==null||userId==null){
+    function del(product_id,cust_id){
+        if(product_id==null||cust_id==null){
             alert("删除参数有误");
             return ;
         }
         if(confirm("您确定删除吗？")){
             $.ajax({
-                url:"http://www.supermarket.com/cart/delete?productId="+productId+"&userId="+userId,
+                url:"http://40f730q296.qicp.vip/cart/delete?product_id="+product_id+"&cust_id="+cust_id,
                 dataType:"json",
                 type:"GET",
                 success:function (data) {
                     if(data.status===200){
-                        window.location.href="http://www.supermarket.com/mycart.html";
+                        window.location.href="http://40f730q296.qicp.vip/mycart.html";
                     }else{
                         alert(data.msg);
                     }
@@ -135,34 +66,34 @@
 
     /**
      * 修改商品数量
-     * @param productId 商品id
-     * @param userId 用户id
+     * @param product_id 商品id
+     * @param cust_id 用户id
      */
-    function inputNum(productId,userId){
-        let num = document.getElementById(productId).value;
-        let numOld = document.getElementById("hid_" + productId).value;
+    function inputNum(product_id,cust_id){
+        let num = document.getElementById(product_id).value;
+        let numOld = document.getElementById("hid_" + product_id).value;        //看接口
         if(num===""||num==null){
             alert("数量填写错误");
             return;
         }
         $.ajax({
-            url:"http://www.supermarket.com/products/item/"+productId,
+            url:"http://40f730q296.qicp.vip/products/item/"+product_id,
             dataType:"json",
             type:"POST",
             success:function(data){
                 let total = data.productNum;
                 if(num > total){
                     alert("购买数量最大" + total);
-                    document.getElementById(productId).value = numOld;
+                    document.getElementById(product_id).value = numOld;
                     return;
                 }
                 $.ajax({
-                    url:"http://www.supermarket.com/cart/update?productId="+productId+"&userId="+userId+"&num="+num,
+                    url:"http://40f730q296.qicp.vip/cart/update?product_id="+product_id+"&cust_id="+cust_id+"&num="+num,
                     dataType:"json",
                     type:"GET",
                     success:function (data) {
                         if(data.status===200){
-                            window.location.href="mycart.html";
+                            window.location.href="./mycart.html";
                         }else{
                             alert(data.msg);
                         }
@@ -180,70 +111,88 @@
 
     /**
      * 查询订单
-     * @param userId 用户id
+     * @param cust_id 用户id
      */
-    function queryOrder(userId){
-        if(userId===""){
+    function queryOrder(cust_id){
+        if(cust_id===""){
             window.location.href="./login.html";
             return;
         }
         $.ajax({
-            url:"http://www.supermarket.com/order/query/"+userId,
+            url:"http://40f730q296.qicp.vip/order/query/"+cust_id,
             dataType:"json",
             type:"GET",
             success:function(data){
                 if(data.length>0){
                     let money = 0;
                     $.each(data,function(index, order){
-                        let orderId = order.orderId;
-                        let orderTime = order.orderTime;
-                        let orderMoney = order.orderMoney;
-                        let payState = order.orderPaystate;
+                        let order_id = order.order_id;
+                        let order_time = order.order_time;
+                        let order_pay = order.order_original-order.order_discount+order.order_deliv;
+                        let order_status = order.order_status;
                         let orderItems = order.orderItems;
                         $("#orders").append("<div class='warp'><h3 style='text-align: center;' class='title'>订单信息</h3></div>");
-                        if(payState===0){
+                        if(order_status===1){
                             $("#orders").append(
-                                "<dd>订单编号:"+orderId+"<br />" +
-                                "下单时间:"+orderTime+"<br />" +
-                                "订单金额:"+orderMoney+"<br />" +
+                                "<dd>订单编号:"+order_id+"<br />" +
+                                "下单时间:"+order_time+"<br />" +
+                                "订单金额:"+order_pay+"<br />" +
                                 "支付状态:<p style='color: red;' >未支付</p>" +
-                                "<a href='javascript:void(0)' onclick='delOrder(\""+orderId+"\")'><img src=\"../../SuperMarket-master/supermarketstatic/img/orderList/sc.jpg\" width=\"69\" height=\"19\" alt='删除订单' /></a>" +
-                                "<a href='javascript:void(0)'> <img src=\"../../SuperMarket-master/supermarketstatic/img/orderList/zx.jpg\" width=\"69\" height=\"19\" alt='在线支付' /></a><br />" +
+                                "<a href='javascript:void(0)' onclick='delOrder(\""+order_id+"\")'><img src=\"img/orderList/sc.jpg\" width=\"69\" height=\"19\" alt='删除订单' /></a>" +
+                                "<a href='javascript:void(0)'> <img src=\"img/orderList/zx.jpg\" width=\"69\" height=\"19\" alt='在线支付' /></a><br />" +
                                 "收货地址:"+order.orderReceiverinfo+"<br />" +
                                 "支付方式：在线支付</dd>"
                             );
-                        }else{
+                        }else if(order_status===2){
                             $("#orders").append(
-                                "<dd>订单编号:"+orderId+"<br />" +
+                                "<dd>订单编号:"+order_id+"<br />" +
                                 "下单时间:"+orderTime+"<br />" +
-                                "订单金额:"+orderMoney+"<br />" +
-                                "支付状态:<p style='color: blue;'>已支付</p><br />" +
+                                "订单金额:"+order_pay+"<br />" +
+                                "支付状态:<p style='color: blue;'>已发货，待签收</p><br />" +
+                                "收货地址: "+order.orderReceiverinfo+"<br />" +
+                                "支付方式：在线支付</dd>"
+                            );
+                        }else if(order_status===3) {
+                            $("#orders").append(
+                                "<dd>订单编号:" + order_id + "<br />" +
+                                "下单时间:" + orderTime + "<br />" +
+                                "订单金额:" + order_pay + "<br />" +
+                                "支付状态:<p style='color: blue;'>已签收，待评价</p><br />" +
+                                "收货地址: " + order.orderReceiverinfo + "<br />" +
+                                "支付方式：在线支付</dd>"
+                            );
+                        }else if(order_status===4){
+                            $("#orders").append(
+                                "<dd>订单编号:"+order_id+"<br />" +
+                                "下单时间:"+orderTime+"<br />" +
+                                "订单金额:"+order_pay+"<br />" +
+                                "支付状态:<p style='color: blue;'>已评价</p><br />" +
                                 "收货地址: "+order.orderReceiverinfo+"<br />" +
                                 "支付方式：在线支付</dd>"
                             );
                         }
                         $("#orders").append(
-                            "<table id='orderTable_"+orderId+"' class='title'>" +
-                                "<tr >" +
-                                "<th >商品图片</th>" +
-                                "<th >商品名称</th>" +
-                                "<th >商品单价</th>" +
-                                "<th >购买数量</th>" +
-                                "<th >小计</th>" +
-                                "</tr>" +
+                            "<table id='orderTable_"+order_id+"' class='title'>" +
+                            "<tr >" +
+                            "<th >商品图片</th>" +
+                            "<th >商品名称</th>" +
+                            "<th >商品单价</th>" +
+                            "<th >购买数量</th>" +
+                            "<th >小计</th>" +
+                            "</tr>" +
                             "</table>" +
-                            "<div class='Order_price'>"+orderMoney+"元</div>"
+                            "<div class='Order_price'>"+order_pay+"元</div>"
                         );
                         if(orderItems.length>0){
                             $.each(orderItems,function (indexnumber,orderItem) {
                                 let money = orderItem.num * orderItem.productPrice;
-                                $("#orderTable_"+orderId).append(
+                                $("#orderTable_"+order_id).append(
                                     "<tr class='prods'>" +
-                                        "<td ><img src='"+orderItem.productImage+"' width='80' height='90' alt='商品图片'></td>" +
-                                        "<td >"+orderItem.productName+"</td>" +
-                                        "<td >"+orderItem.productPrice+"元</td>" +
-                                        "<td >"+orderItem.num+"件</td>" +
-                                        "<td >"+money+"元</td>" +
+                                    "<td ><img src='"+orderItem.productImage+"' width='80' height='90' alt='商品图片'></td>" +
+                                    "<td >"+orderItem.productName+"</td>" +
+                                    "<td >"+orderItem.productPrice+"元</td>" +
+                                    "<td >"+orderItem.num+"件</td>" +
+                                    "<td >"+money+"元</td>" +
                                     "</tr>"
                                 );
                             });
@@ -261,16 +210,16 @@
 
     /**
      * 删除订单
-     * @param orderId 订单id
+     * @param order_id 订单id
      */
-    function delOrder(orderId){
+    function delOrder(order_id){
         $.ajax({
-            url:"http://www.supermarket.com/order/delete/"+orderId,
+            url:"http://40f730q296.qicp.vip/order/delete/"+order_id,
             dataType:"json",
             type:"GET",
             success:function (data) {
                 if(data.status===200){
-                    window.location.href="http://www.supermarket.com/myorder.html";
+                    window.location.href="http://40f730q296.qicp.vip/myorder.html";
                 }else{
                     alert(data.msg);
                 }
@@ -294,36 +243,34 @@
                 <li class="fore1" id="loginbar" clstag="homepage|keycount|home2013|01b">
                     <span id="head_span" >
                         <a href="login.html">登录</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-                        <a href="regist.html">注册</a>
+                        <a href="regist.html">注册</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <a id="goto_order" href="./myorder.html">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			            <a id="goto_cart" href="./mycart.html">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                 </li>
             </ul>
         </div>
     </div>
     <div class="line2">
-        <img id="logo" src="../../SuperMarket-master/supermarketstatic/img/head/logo.png" alt="logo"/>
+        <img id="logo" src="img/head/logo.png" alt="logo"/>
         <input type="text" value="" accesskey="s" id="key" autocomplete="off" style="padding:1px"
                onkeydown="if(event.keyCode===13) search('key');"/>
         <input type="button" value="搜 索" onclick="search('key')"/>
-        <span id="goto">
-			<a id="goto_order" href="myorder.html">我的订单</a>
-			<a id="goto_cart" href="mycart.html">我的购物车</a>
-		</span>
-        <img id="erwm" src="../../SuperMarket-master/supermarketstatic/img/head/e2.png" alt="e2" width="76"/>
+        <img id="erwm" src="img/head/stu3.png" alt="e2" width="250"/>
     </div>
     <div class="line3">
         <div class="content">
             <ul>
-                <li><a href="../../SuperMarket-master/supermarketstatic/index.html">首页</a></li>
-                <li><a href="../../SuperMarket-master/supermarketstatic/product-list.html?page=1&rows=30">全部商品</a></li>
-                <li><a href="../../SuperMarket-master/supermarketstatic/instant-buy.html">秒杀商品</a></li>
-                <li><a href="javascript:void(0)">电脑平板</a></li>
-                <li><a href="javascript:void(0)">家用电器</a></li>
-                <li><a href="javascript:void(0)">汽车用品</a></li>
+                <li><a href="./index.html">首页</a></li>
+                <li><a href="./product-list.html?page=1&rows=30">全部商品</a></li>
+                <li><a href="./instant-buy.html">秒杀商品</a></li>
+                <li><a href="javascript:void(0)">服饰家居</a></li>
+                <li><a href="javascript:void(0)">鞋袜箱包</a></li>
+                <li><a href="javascript:void(0)">彩妆护肤</a></li>
                 <li><a href="javascript:void(0)">食品饮料</a></li>
+                <li><a href="javascript:void(0)">数码电子</a></li>
                 <li><a href="javascript:void(0)">图书杂志</a></li>
-                <li><a href="javascript:void(0)">服装服饰</a></li>
-                <li><a href="javascript:void(0)">大英理财</a></li>
+                <li><a href="javascript:void(0)">医疗保健</a></li>
             </ul>
         </div>
     </div>
@@ -331,17 +278,11 @@
 
 <div id="orders" style="text-align: center;"></div>
 
-<div class="fixed">
-    <a href="https://github.com/GoogleLLP/SuperMarket" target="_blank">
-        <img src="../../SuperMarket-master/supermarketstatic/img/head/qr.jpg" width="100" alt="qrcode"/>
-    </a>
-    <a href="#common_head" class="toTop"></a>
-</div>
 <div id="common_foot">
     <p>
-        Copyright © 2011-2019 网上商城 版权所有 保留一切权利 粤CM-20201119 | 粤ICP备20201119号-1
+        2020—2021学年春季学期  18 级小组项目大型软件电子商务平台————网上商城
         <br />
-        粤公网安备  20201119号
+        大型软件项目  CST4854A
     </p>
 </div>
 </body>

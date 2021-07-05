@@ -22,10 +22,14 @@ body{
 	font-size:14px;
 	color:#666666;
 }
+
 #common_head .line1 .content{
-	width:1200px;
-	margin:0 auto;
+	background-color:#FAFAFA;
+	position: fixed;
+	width:100%;
+	margin:auto;
 	line-height:35px;
+	text-align: right;
 }
 #common_head .line1 .content ul{
 	padding: 0;
@@ -126,6 +130,13 @@ body{
 	bottom: 10%;
 	right: 3%;
 }
+
+.fixed_top{
+	position: fixed;
+	top: 10%;
+
+}
+
 div.fixed a{
 	display: block;
 	margin-bottom: 10px;
@@ -136,7 +147,7 @@ div.fixed a.toTop{
 	border: 4px solid #222222;
 	width: 30px;
 	height: 30px;
-	background-image: url(../img/top.png);
+	background-image: url(../img/head/top.png);
 	background-repeat: no-repeat;
 	background-size: 100%, 100%;
 	background-position-x: center;
@@ -144,5 +155,5 @@ div.fixed a.toTop{
 }
 div.fixed a.toTop:hover{
 	border-color: #777777;
-	background-image: url(../img/top_a.png);
+	background-image: url(../img/head/top_a.png);
 }
