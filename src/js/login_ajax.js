@@ -6,57 +6,49 @@ let UUID = uuid();
  * 登录事件
  * @returns {boolean}
  */
-function login(){
+function login(element){
 	//获取页面数据
-	let userName = $.trim($("form input[name=username]").val());
-	let userPassword = $.trim($("form input[name=password]").val());
-	let valistr = $.trim($("form input[name=valistr]").val());
+	let userName = $(element).find("input[name=username]").val();
+	let userPassword = $(element).find("input[name=password]").val();
 	if(userName===""){
-		$("form table tr:eq(0) td span").html("手机号不能为空");
+		$("form table tr:eq(1) td span").html("手机号不能为空");
 		return false;
 	}
 	if(userPassword===""){
-		$("form table tr:eq(1) td span").html("密码不能为空");
+		$("form table tr:eq(2) td span").html("密码不能为空");
 		return false;
 	}
 
 	$.ajax({
 		url:"http://40f730q296.qicp.vip/custLogin",
 		type:"get",
+		headers:'Content-type: text/html; charset=utf8',
 		data:{
-			"cust_name": userName,
-			"userPassword": userPassword,
-			"remname": $("input[name=remname]").is(":checked"),
-			"autologin": $("input[name=autologin]").is(":checked")
+			"cust_phone": userName,
+			"cust_pwd": userPassword,
 		},
-		dataType:"json",
+		dataType:"jsonp",
+		jsonp:"callback",
 		success:function(result){
-			//result是服务端返回的数据
-			if(result.status === 200) {
-				// 登录成功
+			addCookie("identify");
+			if(result["msg"] === "correct pwd") {
+				sessionStorage.setItem("nickname",result["nickname"]);
 				window.location.href = "./index.html";
-			}else if (result.status === 201 || result.status === 202){
-				// 用户不存在
-				$("#alert").text(result.msg);
+
+			}else if (result["msg"] === "invalid account"){
+				alert("找不到该用户");
 			}else{
-				alert(result.msg);
+				alert("密码错误");
 			}
 		},
-		error:function(){
-			alert("请求失败!");
+		error:function(textStatus){
+			alert(textStatus);
 		}
 	});
+
 	return false;
 }
 
-/**
- * 刷新验证码
- * @param element 标签
- */
-function refreshValistr(element) {
-	window.randomKey = UUID + new Date().getTime();
-	$(element).attr("src", "/valistr?token=VALISTR_" + randomKey);
-}
 
 /**
  * 生成随机UUID

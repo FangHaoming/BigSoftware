@@ -7,13 +7,13 @@
     <meta name="description" content="能源互联网, 网上商城, 电商平台, 电子商务, 掌上e宝, 科技金服, 不正经网站研究中心">
     <title>欢迎登录网上商城</title>
     <noscript>抱歉，你的浏览器不支持 JavaScript!</noscript>
-    <script type="js/common/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="js/cookie.js"></script>
     <script type="text/javascript" src="js/login_ajax.js"></script>
-</head>
+</head> 
 <body>
 <h1>欢迎登陆网上商城</h1>
-<form>
+<form onsubmit="return login(this);">
     <table>
         <tr>
             <td colspan="2" style="color: red;text-align: center;" class="tdx" id="alert"></td>
@@ -30,20 +30,6 @@
             <td>
                 <input type="password" name="password" id="password"/>
                 <span style="color:red"></span>
-            </td>
-        </tr>
-        <tr>
-            <td class="tdx"><label for="valistr">验证码：</label></td>
-            <td>
-                <input type="text" name="valistr" id="valistr"/>
-                <img src="" width="" height="" alt="验证码" onclick="refreshValistr(this)"/>
-                <span style="color:red"></span>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" style="text-align: center;">
-                <input type="checkbox" name="remname" value="true" checked="checked" id="remname"/><label for="remname">记住用户名</label>
-                <input type="checkbox" name="autologin" value="true" id="autologin"/><label for="autologin">30天内自动登陆</label>
             </td>
         </tr>
         <tr>

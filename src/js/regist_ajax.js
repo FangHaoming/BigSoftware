@@ -7,40 +7,67 @@ let UUID = uuid();
  * @returns {boolean} 是否已婚徐提交
  */
 function register(element) {
+    let recev_phone = $(element).find("input[name=recev_phone]").val();
     let userName = $(element).find("input[name=username]").val();
     let userPassword = $(element).find("input[name=password]").val();
     let userNickName = $(element).find("input[name=nickname]").val();
+    let recev_name=$(element).find("input[name=recev_name]").val();
+    let recev_zipcode=$(element).find("input[name=recev_zipcode]").val();
+    let addr_province=$('#province').find('option:selected').text();
+    let addr_city=$('#city').find('option:selected').text();
+    let addr_district=$('#area').find('option:selected').text();
+    let addr_spec=$(element).find("input[name=addr_spec]").val();
+    let recev_isdef=$("input[name=recev_isdef]").is(":checked");
+    if(recev_isdef)recev_isdef=1;
+    else recev_isdef=0;
     let result = true;
-    result = checkNull("username", "用户名不能为空") && result;
+    result = checkNull("username", "手机号不能为空") && result;
+    result = checkNull("recev_phone", "手机号不能为空") && result;
     result = checkNull("password", "密码不能为空") && result;
     result = checkNull("password2", "确认密码不能为空") && result;
     result = checkNull("nickname", "昵称不能为空") && result;
+    result = checkNull("recev_name", "收货人不能为空") && result;
+    result = checkNull("recev_zipcode", "邮政编码不能为空") && result;
+    result = checkSelect("province", "省不能为空") && result;
+    result = checkSelect("city", "市不能为空") && result;
+    result = checkSelect("area", "区不能为空") && result;
+    result = checkNull("addr_spec", "具体不能为空") && result;
     result = isEqual("password", "两次密码输入不一致") && result;
     if (result) {
         $.ajax({
             url: "http://40f730q296.qicp.vip/custRegister",
             type: "post",
+            contentType: "application/x-www-form-urlencoded; charset=utf-8",
             data: {
                 "cust_phone": userName,
                 "cust_pwd": userPassword,
                 "cust_nickname": userNickName,
+                "addr_province":addr_province,
+                "addr_city":addr_city,
+                "addr_district":addr_district,
+                "addr_spec":addr_spec,
+                "recev_zipcode":recev_zipcode,
+                "recev_name":recev_name,
+                "recev_isdef":recev_isdef,
+                "recev_phone":recev_phone
             },
-            dataType: "json",
+            timeout:5000,
+            dataType: "jsonp",
+            jsonp:"callback",
             success: function (result) {
-                window.location.href = "../regist_success.html";
-                alert(result+"1123");
-                if (result.status === 200) {
+                if (result["msg"]==="register successfully") {
                     // 注册成功
-                    window.location.href = "../regist_success.html";
-                } else if (result.status === 201) {
-                    // 后端校验出错
-                    $("#alert").text(result.msg);
-                } else {
-                    alert(result.msg);
+                    window.location.href = "./regist_success.html";
+                } else if (result["msg"] === "invalid phone") {
+                    alert("无效的手机号");
+                } else if(result["msg"]==="already exists"){
+                    alert("该手机号已被占用");
+                } else{
+                    alert("注册失败");
                 }
             },
-            error: function () {
-                alert("请求失败！");
+            error: function (textStatus) {
+                alert(textStatus);
             }
         });
     }
@@ -92,6 +119,17 @@ function checkNull(name, msg){
     }
 }
 
+function checkSelect(id, msg){
+    let text=$("#"+id).find('option:selected').text();
+    if (text === "请选择") {
+        setMsg(id, msg);
+        return false;
+    }else{
+        setMsg(id, "");
+        return  true;
+    }
+}
+
 /**
  * 一致性校验
  * @param name input的name
@@ -116,23 +154,4 @@ function isEqual(name, msg){
     }
 }
 
-/**
- * 是否为邮箱
- * @param name input的name
- * @param msg 提示消息
- * @return {boolean} 是否为邮箱
- */
-function isEmail(name, msg){
-    let value = $("input[name=" + name + "]").val();
-    let reg = /^\w+(\.\w+)*@\w+(\.\w+)+$/;
-    if ($.trim(value) === "")
-        // 如果为空，这是前面非空校验做的事情
-        return false;
-    if (!reg.test(value)) {
-        setMsg(name, msg);
-        return false;
-    }else {
-        setMsg(name, "");
-        return true;
-    }
-}
+

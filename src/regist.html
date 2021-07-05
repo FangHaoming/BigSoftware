@@ -6,15 +6,13 @@
     <noscript>抱歉，你的浏览器不支持 JavaScript!</noscript>
     <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="js/regist_ajax.js"></script>
+    <script type="text/javascript" src="js/province.js"></script>
     <meta charset="UTF-8">
 </head>
-<body>
+<body onload='getProvince()'>
 <form  onsubmit="return register(this);">
     <h1>欢迎注册网上商城</h1>
     <table>
-        <tr>
-            <td colspan="2" id="alert" class="tds" style="text-align: center;color: #ff0000;"></td>
-        </tr>
         <tr>
             <td class="tds"><label for="username">手机号：</label></td>
             <td>
@@ -41,6 +39,66 @@
             <td>
                 <input type="text" name="nickname" id="nickname" onblur="checkNull('nickname', '昵称不能为空')"/>
                 <span style="color: red" id="nickname_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds">地区：</td>
+            <td>
+                <select id="province" onchange="chooseProvince(this)">
+                    <option value="1" >请选择</option>
+                </select>省
+                <select id="city" onchange="chooseCity(this)">
+                    <option value="2">请选择</option>
+                </select>市
+                <select id="area">
+                    <option value="3">请选择</option>
+                </select>
+                <span style="color: red" id="province_msg"></span>
+                <span style="color: red" id="city_msg"></span>
+                <span style="color: red" id="area_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds"><label for="addr_spec">具体地址：</label></td>
+            <td>
+                <input type="text" name="addr_spec" id="addr_spec" onblur="checkNull('recev_name', '具体不能为空')"/>
+                <span style="color: red" id="addr_spec_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds"><label for="recev_name">收货人姓名：</label></td>
+            <td>
+                <input type="text" name="recev_name" id="recev_name" onblur="checkNull('recev_name', '收货人不能为空')"/>
+                <span style="color: red" id="recev_name_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds"><label for="recev_phone">收货人电话：</label></td>
+            <td>
+                <input type="text" name="recev_phone" id="recev_phone" onblur="checkNull('recev_phone', '手机号不能为空')"/>
+                <span style="color: red" id="recev_phone_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds"><label for="recev_zipcode">邮政编码：</label></td>
+            <td>
+                <input type="text" name="recev_zipcode" id="recev_zipcode" />
+                <span style="color: red" id="recev_zipcode_msg"></span>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds"></td>
+            <td >
+                <label for="recev_isdef" style="text-align: center">设为默认收货信息:</label>
+                <input type="checkbox" name="recev_isdef" value="true" checked="checked" id="recev_isdef"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="tds" >
+            </td>
+        </tr>
+        <tr>
+            <td class="tds" >
             </td>
         </tr>
         <tr>
