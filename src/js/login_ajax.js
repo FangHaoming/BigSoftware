@@ -33,6 +33,7 @@ function login(element){
 			addCookie("identify");
 			if(result["msg"] === "correct pwd") {
 				sessionStorage.setItem("nickname",result["nickname"]);
+				sessionStorage.setItem("cust_id",result["cust_id"]);
 				window.location.href = "./index.html";
 
 			}else if (result["msg"] === "invalid account"){
