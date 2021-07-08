@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <title>我的订单</title>
-    <link rel="icon" type="image/x-icon" href="img/head/favicon.ico" />
     <link href="css/orderList.css" rel="stylesheet" type="text/css">
     <link href="css/cart.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="css/foot.css"/>
@@ -21,93 +20,22 @@
 </head>
 <body>
 <script type="text/javascript">
+    var cust_id;
     window.onload=function(){
         if($.cookie("identify")!=null){
-            let nickname=sessionStorage.getItem("nickname");
+            let value=JSON.parse($.cookie("identify"));
+            let nickname=value["nickname"];
+            cust_id=value["cust_id"];
             let html = nickname +
                 "，欢迎！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>"+
                 " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
                 "<a id=\"goto_cart\" href=\"./mycart.html\">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $("#loginbar").html(html);
+            queryOrder(4);
         }else {
             window.location.href = "login.html";
         }
     };
-
-    /**
-     * 删除购物车
-     * @param product_id 商品id
-     * @param cust_id 用户id
-     */
-    function del(product_id,cust_id){
-        if(product_id==null||cust_id==null){
-            alert("删除参数有误");
-            return ;
-        }
-        if(confirm("您确定删除吗？")){
-            $.ajax({
-                url:"http://40f730q296.qicp.vip/cart/delete?product_id="+product_id+"&cust_id="+cust_id,
-                dataType:"json",
-                type:"GET",
-                success:function (data) {
-                    if(data.status===200){
-                        window.location.href="http://40f730q296.qicp.vip/mycart.html";
-                    }else{
-                        alert(data.msg);
-                    }
-                },
-                error:function () {
-                    alert("请求失败");
-                }
-            });
-        }
-    }
-
-
-    /**
-     * 修改商品数量
-     * @param product_id 商品id
-     * @param cust_id 用户id
-     */
-    function inputNum(product_id,cust_id){
-        let num = document.getElementById(product_id).value;
-        let numOld = document.getElementById("hid_" + product_id).value;        //看接口
-        if(num===""||num==null){
-            alert("数量填写错误");
-            return;
-        }
-        $.ajax({
-            url:"http://40f730q296.qicp.vip/products/item/"+product_id,
-            dataType:"json",
-            type:"POST",
-            success:function(data){
-                let total = data.productNum;
-                if(num > total){
-                    alert("购买数量最大" + total);
-                    document.getElementById(product_id).value = numOld;
-                    return;
-                }
-                $.ajax({
-                    url:"http://40f730q296.qicp.vip/cart/update?product_id="+product_id+"&cust_id="+cust_id+"&num="+num,
-                    dataType:"json",
-                    type:"GET",
-                    success:function (data) {
-                        if(data.status===200){
-                            window.location.href="./mycart.html";
-                        }else{
-                            alert(data.msg);
-                        }
-                    },
-                    error:function () {
-                        alert("请求失败");
-                    }
-                });
-            },
-            error:function () {
-                alert("请求失败");
-            }
-        });
-    }
 
     /**
      * 查询订单
@@ -119,55 +47,73 @@
             return;
         }
         $.ajax({
-            url:"http://40f730q296.qicp.vip/order/query/"+cust_id,
-            dataType:"json",
+            url:"http://40f730q296.qicp.vip/orderInfo",
+            dataType:"jsonp",
             type:"GET",
+            data:{
+                "cust_id":cust_id
+            },
+            jsonp:"callback",
             success:function(data){
-                if(data.length>0){
+                if(data!==null){
                     let money = 0;
-                    $.each(data,function(index, order){
+                    $.each(JSON.parse(data["data"]),function(index, order){
                         let order_id = order.order_id;
                         let order_time = order.order_time;
-                        let order_pay = order.order_original-order.order_discount+order.order_deliv;
+                        //let order_pay = order.order_origin_cost-order.order_discount+order.order_deliv;
+                        let order_pay=order.order_pay;
                         let order_status = order.order_status;
-                        let orderItems = order.orderItems;
+                        let orderItems = order.products;
+                        let orderRecev=order.recev;
+                        let RecevAddr=orderRecev.recev_province+orderRecev.recev_city+orderRecev.recev_district+orderRecev.recev_spec;
                         $("#orders").append("<div class='warp'><h3 style='text-align: center;' class='title'>订单信息</h3></div>");
                         if(order_status===1){
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
                                 "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
-                                "支付状态:<p style='color: red;' >未支付</p>" +
-                                "<a href='javascript:void(0)' onclick='delOrder(\""+order_id+"\")'><img src=\"img/orderList/sc.jpg\" width=\"69\" height=\"19\" alt='删除订单' /></a>" +
-                                "<a href='javascript:void(0)'> <img src=\"img/orderList/zx.jpg\" width=\"69\" height=\"19\" alt='在线支付' /></a><br />" +
-                                "收货地址:"+order.orderReceiverinfo+"<br />" +
+                                "支付状态:<span style='color: red;' >未支付</span>" +"<br />"+
+                                "<a href='javascript:void(0)' onclick='delOrder(\""+order_id+"\")'><img src=\"img/pay/delete.png\" width=\"80\" height=\"40\" alt='删除订单' /></a>" +
+                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+2+"\")'> <img src=\"img/pay/confirm.png\" width=\"40\" height=\"19\" alt='在线支付' /></a><br />" +
+                                "收货人:"+orderRecev.recev_name+"<br />" +
+                                "收货人电话:"+orderRecev.recev_phone+"<br />" +
+                                "收货地址:"+RecevAddr+"<br />" +
                                 "支付方式：在线支付</dd>"
                             );
                         }else if(order_status===2){
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
-                                "下单时间:"+orderTime+"<br />" +
+                                "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
                                 "支付状态:<p style='color: blue;'>已发货，待签收</p><br />" +
-                                "收货地址: "+order.orderReceiverinfo+"<br />" +
+                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+3+"\")'> <img src=\"img/pay/receive.png\" width=\"69\" height=\"19\" alt='签收' /></a><br />" +
+                                "收货人:"+orderRecev.recev_name+"<br />" +
+                                "收货人电话:"+orderRecev.recev_phone+"<br />" +
+                                "收货地址: "+RecevAddr+"<br />" +
                                 "支付方式：在线支付</dd>"
                             );
                         }else if(order_status===3) {
                             $("#orders").append(
                                 "<dd>订单编号:" + order_id + "<br />" +
-                                "下单时间:" + orderTime + "<br />" +
+                                "下单时间:" + order_time + "<br />" +
                                 "订单金额:" + order_pay + "<br />" +
                                 "支付状态:<p style='color: blue;'>已签收，待评价</p><br />" +
-                                "收货地址: " + order.orderReceiverinfo + "<br />" +
+                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+4+"\")'> <img src=\"img/pay/coment.png\" width=\"69\" height=\"19\" alt='评价' /></a><br />" +
+                                "收货人:"+orderRecev.recev_name+"<br />" +
+                                "收货人电话:"+orderRecev.recev_phone+"<br />" +
+                                "收货地址: " + RecevAddr + "<br />" +
                                 "支付方式：在线支付</dd>"
                             );
                         }else if(order_status===4){
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
-                                "下单时间:"+orderTime+"<br />" +
+                                "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
                                 "支付状态:<p style='color: blue;'>已评价</p><br />" +
-                                "收货地址: "+order.orderReceiverinfo+"<br />" +
+                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+1+"\")'> <img src=\"img/orderList/zx.jpg\" width=\"69\" height=\"19\" alt='' /></a><br />" +
+                                "收货人:"+orderRecev.recev_name+"<br />" +
+                                "收货人电话:"+orderRecev.recev_phone+"<br />" +
+                                "收货地址: "+RecevAddr+"<br />" +
                                 "支付方式：在线支付</dd>"
                             );
                         }
@@ -181,18 +127,23 @@
                             "<th >小计</th>" +
                             "</tr>" +
                             "</table>" +
+                            "<a href='javascript:void(0)' class='Op' onclick='delOrder(\""+order_id+"\")'>删除订单</a>" +
                             "<div class='Order_price'>"+order_pay+"元</div>"
                         );
-                        if(orderItems.length>0){
+                        if(orderItems!==null){
                             $.each(orderItems,function (indexnumber,orderItem) {
-                                let money = orderItem.num * orderItem.productPrice;
+                                let name=orderItem.product_name+"<br />";
+                                let spec=JSON.parse(orderItem.spec);
+                                for(let i in spec){
+                                    name=name+i+":"+spec[i]+" ";
+                                }
                                 $("#orderTable_"+order_id).append(
                                     "<tr class='prods'>" +
-                                    "<td ><img src='"+orderItem.productImage+"' width='80' height='90' alt='商品图片'></td>" +
-                                    "<td >"+orderItem.productName+"</td>" +
-                                    "<td >"+orderItem.productPrice+"元</td>" +
-                                    "<td >"+orderItem.num+"件</td>" +
-                                    "<td >"+money+"元</td>" +
+                                    "<td ><img src='http://40f730q296.qicp.vip/images/products/"+orderItem.product_img+"' width='80' height='90' alt='商品图片'></td>" +
+                                    "<td style=\"word-break:break-all;line-height: 20px;word-wrap:break-all;\">"+name+"</td>" +
+                                    "<td >"+orderItem.price/orderItem.count+"元</td>" +
+                                    "<td >"+orderItem.count+"件</td>" +
+                                    "<td >"+orderItem.price+"元</td>" +
                                     "</tr>"
                                 );
                             });
@@ -209,16 +160,48 @@
     }
 
     /**
+     * 支付订单
+     * @param order_id 订单id
+     */
+    function setOrder(order_id,order_status){
+        $.ajax({
+            url:"http://40f730q296.qicp.vip/changeStatus",
+            dataType:"jsonp",
+            jsonp:"callback",
+            type:"GET",
+            data:{
+                "order_id":order_id,
+                "order_status":order_status
+            },
+            success:function (data) {
+                if(data["msg"]==="success"){
+                    window.location.href="myorder.html";
+                    queryOrder(cust_id);
+                }else{
+                    alert(data.msg);
+                }
+            },
+            error:function () {
+                alert("请求失败");
+            }
+        })
+    }
+
+    /**
      * 删除订单
      * @param order_id 订单id
      */
     function delOrder(order_id){
         $.ajax({
-            url:"http://40f730q296.qicp.vip/order/delete/"+order_id,
-            dataType:"json",
+            url:"http://40f730q296.qicp.vip/orderDelete/",
+            dataType:"jsonp",
+            jsonp:"callback",
             type:"GET",
+            data:{
+                "order_id":order_id
+            },
             success:function (data) {
-                if(data.status===200){
+                if(data["msg"]==="success"){
                     window.location.href="http://40f730q296.qicp.vip/myorder.html";
                 }else{
                     alert(data.msg);

@@ -13,7 +13,7 @@ function register(element) {
     let userNickName = $(element).find("input[name=nickname]").val();
     let recev_name=$(element).find("input[name=recev_name]").val();
     let recev_zipcode=$(element).find("input[name=recev_zipcode]").val();
-    let addr_province=$('#province').find('option:selected').text();
+    let addr_province=$('#province').find('option:selected').text()+"省";
     let addr_city=$('#city').find('option:selected').text();
     let addr_district=$('#area').find('option:selected').text();
     let addr_spec=$(element).find("input[name=addr_spec]").val();

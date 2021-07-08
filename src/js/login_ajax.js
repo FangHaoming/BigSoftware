@@ -22,18 +22,22 @@ function login(element){
 	$.ajax({
 		url:"http://40f730q296.qicp.vip/custLogin",
 		type:"get",
-		headers:'Content-type: text/html; charset=utf8',
 		data:{
 			"cust_phone": userName,
 			"cust_pwd": userPassword,
 		},
 		dataType:"jsonp",
 		jsonp:"callback",
+		contentType: "application/x-www-form-urlencoded; charset=utf-8",
 		success:function(result){
-			addCookie("identify");
 			if(result["msg"] === "correct pwd") {
-				sessionStorage.setItem("nickname",result["nickname"]);
-				sessionStorage.setItem("cust_id",result["cust_id"]);
+				let re={
+					"nickname":result["nickname"],
+					"cust_id":result["cust_id"],
+					"msg":result["msg"]
+				};
+				let str_re=JSON.stringify(re);
+				addCookie("identify",str_re);
 				window.location.href = "./index.html";
 
 			}else if (result["msg"] === "invalid account"){

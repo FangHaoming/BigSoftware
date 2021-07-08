@@ -16,3 +16,12 @@ body {
 	font-weight:bold;
 	border-bottom: 1px solid #CCC;
 }
+
+.Op{
+	width:120px;
+	font-size:25px;
+	border:2px solid #8c8c8c;
+	border-radius:5px;
+	text-decoration:none;
+	text-align:right;
+}
