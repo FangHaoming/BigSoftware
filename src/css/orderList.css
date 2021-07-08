@@ -8,8 +8,8 @@ body {
 }
 
 .Order_price{
-	width:1200px;
 	text-align:right;
+	display: inline;
 	color:#F00;
 	font-size:35px;
 	margin:10px auto;
@@ -17,8 +17,16 @@ body {
 	border-bottom: 1px solid #CCC;
 }
 
+.Order_bottom{
+	width:1200px;
+	text-align:right;
+	margin:10px auto;
+}
+
 .Op{
+	margin-right: 50px;
 	width:120px;
+	padding: 5px;
 	font-size:25px;
 	border:2px solid #8c8c8c;
 	border-radius:5px;

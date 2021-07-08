@@ -31,7 +31,7 @@
                 " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +
                 "<a id=\"goto_cart\" href=\"./mycart.html\">我的购物车</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $("#loginbar").html(html);
-            queryOrder(4);
+            queryOrder(6);
         }else {
             window.location.href = "login.html";
         }
@@ -65,56 +65,53 @@
                         let order_status = order.order_status;
                         let orderItems = order.products;
                         let orderRecev=order.recev;
+                        let operation;
                         let RecevAddr=orderRecev.recev_province+orderRecev.recev_city+orderRecev.recev_district+orderRecev.recev_spec;
                         $("#orders").append("<div class='warp'><h3 style='text-align: center;' class='title'>订单信息</h3></div>");
                         if(order_status===1){
+                            operation="<a href='javascript:void(0)' class='Op' style='margin-right: 10px' onclick='delOrder(\""+order_id+"\")'>删除订单</a>" +
+                                "<a href='javascript:void(0)' class='Op' onclick='setOrder(\""+order_id+"\",\""+2+"\")'>在线支付</a>";
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
                                 "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
-                                "支付状态:<span style='color: red;' >未支付</span>" +"<br />"+
-                                "<a href='javascript:void(0)' onclick='delOrder(\""+order_id+"\")'><img src=\"img/pay/delete.png\" width=\"80\" height=\"40\" alt='删除订单' /></a>" +
-                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+2+"\")'> <img src=\"img/pay/confirm.png\" width=\"40\" height=\"19\" alt='在线支付' /></a><br />" +
+                                "支付状态:<p style='color: red;' >  未支付  </p>" +"<br />"+
                                 "收货人:"+orderRecev.recev_name+"<br />" +
                                 "收货人电话:"+orderRecev.recev_phone+"<br />" +
-                                "收货地址:"+RecevAddr+"<br />" +
-                                "支付方式：在线支付</dd>"
+                                "收货地址:"+RecevAddr+"<br />"
                             );
                         }else if(order_status===2){
+                            operation="<a href='javascript:void(0)' class='Op' onclick='setOrder(\""+order_id+"\",\""+3+"\")'>确认收货</a>";
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
                                 "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
-                                "支付状态:<p style='color: blue;'>已发货，待签收</p><br />" +
-                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+3+"\")'> <img src=\"img/pay/receive.png\" width=\"69\" height=\"19\" alt='签收' /></a><br />" +
+                                "支付状态:<p style='color: blue;'>  已发货，待签收  </p><br />" +
                                 "收货人:"+orderRecev.recev_name+"<br />" +
                                 "收货人电话:"+orderRecev.recev_phone+"<br />" +
-                                "收货地址: "+RecevAddr+"<br />" +
-                                "支付方式：在线支付</dd>"
+                                "收货地址: "+RecevAddr+"<br />"
                             );
                         }else if(order_status===3) {
+                            operation="<a href='javascript:void(0)' class='Op' onclick='setOrder(\""+order_id+"\",\""+4+"\")'>评价</a>";
                             $("#orders").append(
                                 "<dd>订单编号:" + order_id + "<br />" +
                                 "下单时间:" + order_time + "<br />" +
                                 "订单金额:" + order_pay + "<br />" +
                                 "支付状态:<p style='color: blue;'>已签收，待评价</p><br />" +
-                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+4+"\")'> <img src=\"img/pay/coment.png\" width=\"69\" height=\"19\" alt='评价' /></a><br />" +
                                 "收货人:"+orderRecev.recev_name+"<br />" +
                                 "收货人电话:"+orderRecev.recev_phone+"<br />" +
-                                "收货地址: " + RecevAddr + "<br />" +
-                                "支付方式：在线支付</dd>"
+                                "收货地址: " + RecevAddr + "<br />"
                             );
                         }else if(order_status===4){
+                            operation="<a href='javascript:void(0)' class='Op' onclick='setOrder(\""+order_id+"\",\""+1+"\")'>接着舞</a>";
                             $("#orders").append(
                                 "<dd>订单编号:"+order_id+"<br />" +
                                 "下单时间:"+order_time+"<br />" +
                                 "订单金额:"+order_pay+"<br />" +
                                 "支付状态:<p style='color: blue;'>已评价</p><br />" +
-                                "<a href='javascript:void(0)'  onclick='setOrder(\""+order_id+"\",\""+1+"\")'> <img src=\"img/orderList/zx.jpg\" width=\"69\" height=\"19\" alt='' /></a><br />" +
                                 "收货人:"+orderRecev.recev_name+"<br />" +
                                 "收货人电话:"+orderRecev.recev_phone+"<br />" +
-                                "收货地址: "+RecevAddr+"<br />" +
-                                "支付方式：在线支付</dd>"
+                                "收货地址: "+RecevAddr+"<br />"
                             );
                         }
                         $("#orders").append(
@@ -127,8 +124,11 @@
                             "<th >小计</th>" +
                             "</tr>" +
                             "</table>" +
-                            "<a href='javascript:void(0)' class='Op' onclick='delOrder(\""+order_id+"\")'>删除订单</a>" +
-                            "<div class='Order_price'>"+order_pay+"元</div>"
+                            "<div class='Order_bottom'>" +
+                            operation+
+                            "<div class='Order_price'>"+order_pay+"元</div>"+
+                            "</div>"
+
                         );
                         if(orderItems!==null){
                             $.each(orderItems,function (indexnumber,orderItem) {
@@ -193,7 +193,7 @@
      */
     function delOrder(order_id){
         $.ajax({
-            url:"http://40f730q296.qicp.vip/orderDelete/",
+            url:"http://40f730q296.qicp.vip/deleteOrder",
             dataType:"jsonp",
             jsonp:"callback",
             type:"GET",
@@ -202,7 +202,7 @@
             },
             success:function (data) {
                 if(data["msg"]==="success"){
-                    window.location.href="http://40f730q296.qicp.vip/myorder.html";
+                    window.location.href="myorder.html";
                 }else{
                     alert(data.msg);
                 }
