@@ -36,7 +36,7 @@ function register(element) {
     if (result) {
         $.ajax({
             url: "http://40f730q296.qicp.vip/custRegister",
-            type: "post",
+            type: "get",
             contentType: "application/x-www-form-urlencoded; charset=utf-8",
             data: {
                 "cust_phone": userName,

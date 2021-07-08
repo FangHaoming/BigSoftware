@@ -22,10 +22,11 @@
 <script type="text/javascript">
     var cust_id;
     window.onload=function(){
-        if($.cookie("identify")!=null){
-            let value=JSON.parse($.cookie("identify"));
-            let nickname=value["nickname"];
-            cust_id=value["cust_id"];
+        var des=decodeURI($.cookie("identify"))
+        var result= JSON.parse(des);
+        if(result["cust_id"]!==null){
+            let nickname=result["nickname"];
+            cust_id=result["cust_id"];
             let html = nickname +
                 "，欢迎！<a href='javascript:void(0)' class='link-logout' onclick='logout()'>[退出]</a>"+
                 " &nbsp;&nbsp;|&nbsp;&nbsp;<a id=\"goto_order\" href=\"./myorder.html\">我的订单</a>&nbsp;&nbsp;|&nbsp;&nbsp;" +

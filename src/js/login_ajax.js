@@ -22,13 +22,13 @@ function login(element){
 	$.ajax({
 		url:"http://40f730q296.qicp.vip/custLogin",
 		type:"get",
+		contentType: "application/x-www-form-urlencoded; charset=utf-8",
 		data:{
 			"cust_phone": userName,
 			"cust_pwd": userPassword,
 		},
 		dataType:"jsonp",
 		jsonp:"callback",
-		contentType: "application/x-www-form-urlencoded; charset=utf-8",
 		success:function(result){
 			if(result["msg"] === "correct pwd") {
 				let re={
@@ -37,7 +37,8 @@ function login(element){
 					"msg":result["msg"]
 				};
 				let str_re=JSON.stringify(re);
-				addCookie("identify",str_re);
+				let ens=encodeURI(str_re);
+				addCookie("identify",ens);
 				window.location.href = "./index.html";
 
 			}else if (result["msg"] === "invalid account"){
@@ -69,4 +70,33 @@ function uuid() {
 	s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
 	s[8] = s[13] = s[18] = s[23] = "-";
 	return s.join("");
+}
+
+/**
+ *对敏感字符编码
+ */
+function encode(key) {
+	const encodeArr = [{
+		code: '%',
+		encode: '%25'
+	}, {
+		code: '?',
+		encode: '%3F'
+	}, {
+		code: '#',
+		encode: '%23'
+	}, {
+		code: '&',
+		encode: '%26'
+	}, {
+		code: '=',
+		encode: '%3D'
+	}];
+	return key.replace(/[%?#&=]/g, ($, index, str) => {
+		for (const k of encodeArr) {
+			if (k.code === $) {
+				return k.encode;
+			}
+		}
+	});
 }

@@ -24,7 +24,8 @@
     <meta charset="UTF-8">
     <script type="text/javascript">
         window.onload=function() {
-            var result = JSON.parse($.cookie("identify"));
+            var des=decodeURI($.cookie("identify"))
+            var result = JSON.parse(des);
             if (result["msg"]==="correct pwd") {
                 let nickname = result["nickname"];
                 let html = nickname +
